@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="Imagen/Logo/IconoCalendario.png">
+    <title>Mi Horario - Ingeniería de Sistemas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background-color: #fafafa;
+            color: #333;
+            line-height: 1.5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 8px;
+        }
+
+        .header .info {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+
+        .schedule-container {
+            padding: 30px;
+        }
+
+        .day-schedule {
+            margin-bottom: 30px;
+        }
+
+        .day-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .day-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #495057;
+            margin-right: 15px;
+        }
+
+        .day-date {
+            font-size: 14px;
+            color: #6c757d;
+            background: #f8f9fa;
+            padding: 4px 12px;
+            border-radius: 12px;
+        }
+
+        .classes {
+            display: grid;
+            gap: 12px;
+        }
+
+        .class {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            background: #f8f9fa;
+            transition: all 0.2s ease;
+        }
+
+        .class:hover {
+            background: #e9ecef;
+            transform: translateX(4px);
+        }
+
+        .time {
+            font-size: 14px;
+            font-weight: 600;
+            color: #667eea;
+            min-width: 120px;
+        }
+
+        .subject {
+            flex: 1;
+            margin-left: 20px;
+        }
+
+        .subject-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .subject-details {
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .location {
+            font-size: 14px;
+            color: #6c757d;
+            min-width: 150px;
+            text-align: right;
+        }
+
+        .type-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        .teoria {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .practica {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .virtual {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .no-classes {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .current-time {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 0 -20px;
+                border-radius: 0;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .class {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .time, .location {
+                min-width: auto;
+                text-align: left;
+            }
+            
+            .subject {
+                margin-left: 0;
+                margin: 8px 0;
+            }
+            
+            .current-time {
+                position: static;
+                margin: 0 auto 20px;
+                width: fit-content;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="current-time" id="currentTime"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>Horario Académico</h1>
+            <div class="info">Manuel Alejandro Escalante Valdivieso • Ingeniería de Sistemas • Semestre 2025-02</div>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number">21.5</div>
+                <div class="stat-label">Créditos</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">7</div>
+                <div class="stat-label">Materias</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Días de clase</div>
+            </div>
+        </div>
+
+        <div class="schedule-container">
+            <!-- LUNES -->
+            <div class="day-schedule">
+                <div class="day-header">
+                    <div class="day-name">Lunes</div>
+                    <div class="day-date">01 Sep - 15 Dec</div>
+                </div>
+                <div class="classes">
+                    <div class="class">
+                        <div class="time">09:00 - 09:50</div>
+                        <div class="subject">
+                            <div class="subject-name">Tutoría VI - Liderazgo Transformacional</div>
+                            <div class="subject-details">Sección A1 • Prof. María Lucía Mocarro Willis <span class="type-badge virtual">VIRTUAL</span></div>
+                        </div>
+                        <div class="location">Online</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MARTES -->
+            <div class="day-schedule">
+                <div class="day-header">
+                    <div class="day-name">Martes</div>
+                    <div class="day-date">02 Sep - 16 Dec</div>
+                </div>
+                <div class="classes">
+                    <div class="class">
+                        <div class="time">17:30 - 20:00</div>
+                        <div class="subject">
+                            <div class="subject-name">Fundamentos de Modelado y Animación</div>
+                            <div class="subject-details">Sección C1 • Prof. Rafael Alberto Sánchez Saldaña <span class="type-badge teoria">TEORÍA</span></div>
+                        </div>
+                        <div class="location">Lab. Redes 303</div>
+                    </div>
+                    <div class="class">
+                        <div class="time">20:10 - 21:50</div>
+                        <div class="subject">
+                            <div class="subject-name">Fundamentos de Modelado y Animación</div>
+                            <div class="subject-details">Sección C1 • Prof. Rafael Alberto Sánchez Saldaña <span class="type-badge practica">PRÁCTICA</span></div>
+                        </div>
+                        <div class="location">Lab. Redes 303</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MIÉRCOLES -->
+            <div class="day-schedule">
+                <div class="day-header">
+                    <div class="day-name">Miércoles</div>
+                    <div class="day-date">03 Sep - 17 Dec</div>
+                </div>
+                <div class="classes">
+                    <div class="class">
+                        <div class="time">07:30 - 10:00</div>
+                        <div class="subject">
+                            <div class="subject-name">Gerencia de la Tecnología de la Información</div>
+                            <div class="subject-details">Sección A1 • Prof. Edward Alberto Vega Gavidia <span class="type-badge teoria">TEORÍA</span></div>
+                        </div>
+                        <div class="location">Lab. Cómputo 303</div>
+                    </div>
+                    <div class="class">
+                        <div class="time">10:20 - 12:00</div>
+                        <div class="subject">
+                            <div class="subject-name">Gerencia de la Tecnología de la Información</div>
+                            <div class="subject-details">Sección A1 • Prof. Edward Alberto Vega Gavidia <span class="type-badge practica">PRÁCTICA</span></div>
+                        </div>
+                        <div class="location">Lab. Cómputo 301</div>
+                    </div>
+                    <div class="class">
+                        <div class="time">13:00 - 15:30</div>
+                        <div class="subject">
+                            <div class="subject-name">Redes y Comunicaciones I</div>
+                            <div class="subject-details">Sección B1 • Prof. Henry Paúl Bermejo Terrones <span class="type-badge teoria">TEORÍA</span></div>
+                        </div>
+                        <div class="location">Lab. Redes 303</div>
+                    </div>
+                    <div class="class">
+                        <div class="time">15:40 - 17:20</div>
+                        <div class="subject">
+                            <div class="subject-name">Redes y Comunicaciones I</div>
+                            <div class="subject-details">Sección B1 • Prof. Henry Paúl Bermejo Terrones <span class="type-badge practica">PRÁCTICA</span></div>
+                        </div>
+                        <div class="location">Lab. Redes 303</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JUEVES -->
+            <div class="day-schedule">
+                <div class="day-header">
+                    <div class="day-name">Jueves</div>
+                    <div class="day-date">04 Sep - 18 Dec</div>
+                </div>
+                <div class="classes">
+                    <div class="class">
+                        <div class="time">10:00 - 10:50</div>
+                        <div class="subject">
+                            <div class="subject-name">Tutoría VII - Gestión de Recursos Personales</div>
+                            <div class="subject-details">Sección A11 • Prof. Marjorie Lisbeth Yáñez Arteaga <span class="type-badge virtual">VIRTUAL</span></div>
+                        </div>
+                        <div class="location">Online</div>
+                    </div>
+                    <div class="class">
+                        <div class="time">13:00 - 15:30</div>
+                        <div class="subject">
+                            <div class="subject-name">Ingeniería Web</div>
+                            <div class="subject-details">Sección B1 • Prof. Marcelino Torres Villanueva <span class="type-badge teoria">TEORÍA</span></div>
+                        </div>
+                        <div class="location">Lab. Redes 303</div>
+                    </div>
+                    <div class="class">
+                        <div class="time">15:40 - 17:20</div>
+                        <div class="subject">
+                            <div class="subject-name">Ingeniería Web</div>
+                            <div class="subject-details">Sección B1 • Prof. Marcelino Torres Villanueva <span class="type-badge practica">PRÁCTICA</span></div>
+                        </div>
+                        <div class="location">Lab. Redes 303</div>
+                    </div>
+                    <div class="class">
+                        <div class="time">17:30 - 20:00</div>
+                        <div class="subject">
+                            <div class="subject-name">Arquitectura de Sistemas de Información</div>
+                            <div class="subject-details">Sección C1 • Prof. Carlos Enrique Castillo Diestra <span class="type-badge teoria">TEORÍA</span></div>
+                        </div>
+                        <div class="location">Lab. Cómputo 301</div>
+                    </div>
+                    <div class="class">
+                        <div class="time">20:10 - 21:00</div>
+                        <div class="subject">
+                            <div class="subject-name">Arquitectura de Sistemas de Información</div>
+                            <div class="subject-details">Sección C1 • Prof. Carlos Enrique Castillo Diestra <span class="type-badge practica">PRÁCTICA</span></div>
+                        </div>
+                        <div class="location">Lab. Cómputo 301</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIERNES -->
+            <div class="day-schedule">
+                <div class="day-header">
+                    <div class="day-name">Viernes</div>
+                    <div class="day-date">Libre</div>
+                </div>
+                <div class="no-classes">
+                    🎉 Sin clases programadas - Día libre para estudiar
+                </div>
+            </div>
+
+            <!-- SÁBADO -->
+            <div class="day-schedule">
+                <div class="day-header">
+                    <div class="day-name">Sábado</div>
+                    <div class="day-date">Libre</div>
+                </div>
+                <div class="no-classes">
+                    🎉 Sin clases programadas - Fin de semana
+                </div>
+            </div>
+
+            <!-- DOMINGO -->
+            <div class="day-schedule">
+                <div class="day-header">
+                    <div class="day-name">Domingo</div>
+                    <div class="day-date">Libre</div>
+                </div>
+                <div class="no-classes">
+                    🎉 Sin clases programadas - Fin de semana
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('currentTime').textContent = now.toLocaleDateString('es-ES', options);
+        }
+
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Highlight current day
+        const today = new Date().getDay();
+        const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        const currentDayName = dayNames[today];
+
+        document.querySelectorAll('.day-name').forEach(dayElement => {
+            if (dayElement.textContent === currentDayName) {
+                dayElement.parentElement.style.borderBottom = '2px solid #667eea';
+                dayElement.style.color = '#667eea';
+            }
+        });
+    </script>
+</body>
+</html>
